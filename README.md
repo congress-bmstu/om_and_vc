@@ -2,18 +2,25 @@
 
 ## Интерполяция в лоб -- решение СЛАУ с определителем Ван дер Монда
 
+См. функцию `naive_interpolation` в [accurate_interpolation.py](src/accurate_interpolation.py).
+
 ## Интерполяция Лагранжа
 
+См. функцию `lagrange_interpolation` в [accurate_interpolation.py](src/accurate_interpolation.py).
+
 ## Интерполяция Ньютона (sympy)
+
+См. функцию `newton_interpolation` в [accurate_interpolation.py](src/accurate_interpolation.py).
 
 # Приближенная интерполяция
 ## Метод наименьших квадратов
 
-См. функцию `mnk_interpolate` в [файле](src/approx_interpolation.py).
+См. функцию `mnk_interpolate` в [approx_interpolation.py](src/approx_interpolation.py).
 
-Имеется некоторая функция, у которой мы знаем только набор значений функции. 
+[//]: # (Имеется некоторая функция, у которой мы знаем только набор значений функции. )
 
-В ДЗ требуется для вычислений выбрать значения в концах отрезка и всех целых точек внутри него.
+[//]: # ()
+[//]: # (В ДЗ требуется для вычислений выбрать значения в концах отрезка и всех целых точек внутри него.)
 
 # Одномерная оптимизация без использования производной
 
@@ -31,7 +38,7 @@
 
 В дз необходимо выбрать минимум, а также точку минимума. 
 
-См. функцию `bisect` в [файле](src/extremum.py).
+См. функцию `bisect` в [extremum.py](src/extremum.py).
 
 ## Метод золотого сечения
 
@@ -43,7 +50,7 @@
 
 Аналогично на каждой следующей итерации.
 
-См. функцию `golden_cut` в [файле](src/extremum.py). 
+См. функцию `golden_cut` в [extremum.py](src/extremum.py). 
 
 ## Метод парабол 
 
@@ -67,14 +74,38 @@
 
 Далее f(bar_u) = min(f(w), f(u0), ..., f(un)).
 
-См. функцию `parabola` в [файле](src/extremum.py).
+См. функцию `parabola` в [extremum.py](src/extremum.py).
 
 ## Метод ломанных 
+
+(пустая функция)
+
+См. функцию `method_lomannih` в [extremum.py](src/extremum.py). 
 
 # Одномерная оптимизация с использованием производных
 
 ## Метод средней точки
 
+См. функцию `method_srednei_tochki` в [extremum_with_derivative.py](src/extremum_with_derivative.py).
+
 ## Метод хорд _(метод секущих)_
 
+См. функцию `chordal_method` в [extremum_with_derivative.py](src/extremum_with_derivative.py).
+
 ## Метод Ньютона _(метод касательных)_
+
+См. функцию `newton_method` в [extremum_with_two_derivatives.py](src/extremum_with_two_derivatives.py).
+
+# Многомерная оптимизация 
+
+## Градиентный метод дробления шага
+
+См. функцию `grad_method_step_division` в [multidim_optimization_with_grad.py](src/multidim_optimization_with_grad.py).
+
+## Градиентный метод скорейшего спуска
+
+См. функцию `grad_method_of_fastest_fall` в [multidim_optimization_with_grad.py](src/multidim_optimization_with_grad.py).
+
+## Метод сопряженных направлений
+
+(нет)

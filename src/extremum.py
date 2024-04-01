@@ -129,7 +129,7 @@ def parabola(f, a, b):
 
             if(is_vipuklaya_troika(us[-3], funcus[-3], us[-2], funcus[-2], us[-1], funcus[-1])):
                 # make parabola
-                coeff = inter_v_lob(us[-3:], funcus[-3:])
+                coeff = naive_interpolation(us[-3:], funcus[-3:])
                 print('Вершина параболки:',  - coeff[1] / (2 * coeff[-1]) )
                 return 
             i += 1

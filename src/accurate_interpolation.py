@@ -50,8 +50,8 @@ def newton_interpolation(X, Y):
     return sp.simplify(f[-1])
 
 if __name__ == '__main__':
-    X = np.array([-1, 0, 1, 2])
-    Y = np.array([1, -1, 2, -1])
+    X = [-1, 0, 1, 2]
+    Y = [1, -1, 2, -1]
 
     print(f'{naive_interpolation(X, Y) = }')
     print(f'{lagrange_interpolation(X, Y) = }')

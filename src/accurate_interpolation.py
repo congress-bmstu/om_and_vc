@@ -1,15 +1,17 @@
 import numpy as np
 import sympy as sp
 
-def naive_interpolation(X, Y):
-    A = np.vander(X, increasing=True)
-    print(f'{A = }')
-    return np.linalg.solve(A, Y) # TODO возвращать sympy функцию или lambda
-    # TODO решать СЛАУ не численно, а с помощью sympy
-
-def lagrange_interpolation(X, Y):
+def naive_interpolation(X, Y, x = sp.Symbol('x')):
     N = len(X)
-    x = sp.Symbol('x')
+    A = sp.Matrix([
+        [ X[i]**j for j in range(N) ]
+        for i in range(N)])
+    print(f'{A = }')
+    coeffs, = sp.linsolve( (A, sp.Matrix(Y)) )
+    return sum([coeffs[i] * x**i for i in range(N)])
+
+def lagrange_interpolation(X, Y, x = sp.Symbol('x')):
+    N = len(X)
     y = 0
     for i in range(N):
         L = 1
@@ -24,8 +26,7 @@ def lagrange_interpolation(X, Y):
     sp.pprint(y)
     return y
 
-def newton_interpolation(X, Y):
-    x = sp.Symbol('x')
+def newton_interpolation(X, Y, x = sp.Symbol('x')):
     N = len(X)
     A = [Y[0]]
     f = [A[0]]

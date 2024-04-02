@@ -9,9 +9,16 @@
 Функции `naive_interpolation` на вход подаётся массивы X и Y одинаковой размерности N,
 на выход пока что получаем коэффициенты полинома степени $N-1$, начиная с нулевой степени.
 
-Нужно:
-- переписать эту функцию с numpy (численного решения) на sympy (в нём можно работать в обыкновенных дробях);
-- переделать return, нужно возвращать sympy выражение, содержащее переменную `sp.Symbol('x')`.
+Usage:
+```python
+import sympy as sp
+from src.accurate_interpolation import naive_interpolation
+X = [-1, 0, 1, 2]
+Y = [1, -1, 2, -1]
+
+f = naive_interpolation(X, Y)
+print(f.subs(sp.Symbol('x'), -1))
+```
 
 ## Интерполяция Лагранжа
 
@@ -122,7 +129,7 @@ $u_i$ выбираем с помощью константы $\varphi = \dfrac{1+
 
 - Если тройка найдена, w - вершина параболы, если нет $w = a$. 
 
-- Далее $f(\bar{u}) = \operatorname{min}(f(w), f(u_0), \dotsc, f(u_n))$.
+- Далее $f(\bar{u}) = \min(f(w), f(u_0), \dotsc, f(u_n))$.
 
 См. функцию `parabola` в [extremum.py](src/extremum.py).
 

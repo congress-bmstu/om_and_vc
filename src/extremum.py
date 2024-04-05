@@ -1,7 +1,10 @@
 import numpy as np
 import sympy as sp
 
-from .accurate_interpolation import *
+try:
+    from .accurate_interpolation import *
+except:
+    from accurate_interpolation import *
 
 # ищется минимум
 
@@ -13,75 +16,108 @@ def print_number(a, ROUNDING_COUNT = 5, x = sp.Symbol('x')):
         out += f'{a} = {round(a.evalf(), ROUNDING_COUNT)}'
     return out
 
-def bisect(f, a, b, iteration = 1,
-           COUNT_ITERATIONS = 3,
+def bisect(f, a, b, COUNT_ITERATIONS = 3,
            x = sp.Symbol('x'),
            delta = sp.Rational(1, 10)):
-    if(iteration > COUNT_ITERATIONS):
-        print(f'Ну здесь остановимся, минимум будет в отрезке {a.evalf()}, {b.evalf()}')
-        return
-    func = sp.lambdify(x, f)
-
-    u1 = sp.Rational( a+b - delta, 2)
-    u2 = sp.Rational( a+b + delta, 2)
-    
-    func1 = func(u1)
-    func2 = func(u2)
-
-    print(f'В точке u1 = {print_number(u1)}: {print_number(func1)}') 
-    print(f'В точке u2 = {print_number(u2)}: {print_number(func2)}') 
-
-    if(iteration == COUNT_ITERATIONS):
-        print(f'Последний шаг, надо вибирать минимум: ', end='')
-        if(func1 < func2):
-            print(f'{print_number(u1)}')
+    print(f"a_{0} = {print_number(a)}")
+    print(f"b_{0} = {print_number(b)}")
+    for iteration in range(COUNT_ITERATIONS):
+        u_left = sp.Rational( a+b - delta, 2)
+        u_right = sp.Rational( a+b + delta, 2)
+        print(f"u_{2*iteration+1} = {print_number(u_left)}")
+        print(f"u_{2*iteration+2} = {print_number(u_right)}")
+        f_left = f.subs(x, u_left)
+        f_right = f.subs(x, u_right)
+        print(f"f(u_{2*iteration+1}) = {print_number(f_left)}")
+        print(f"f(u_{2*iteration+2}) = {print_number(f_right)}")
+        if(f_left <= f_right):
+            a = a
+            b = u_right
+            baru = u_left
+            m = u_left
         else:
-            print(f'{print_number(u2)}')
-        return
+            a = u_left
+            b = b
+            baru = u_right
+            m = f_right
+        print(f"a_{iteration+1} = {print_number(a)}")
+        print(f"b_{iteration+1} = {print_number(b)}")
+    print(f"baru = {print_number(baru)}")
+    print(f"m_* = {print_number(m)}")
+    return (baru, m)
 
-    if(func1 < func2):
-        print(f'Так как на этом подотрезке функция возрастает, выбираем отрезок [a = {print_number(a)}, {print_number(u2)}]')
-        return bisect(f, a, u2, iteration+1, COUNT_ITERATIONS)
-    else:
-        print(f'Так как на этом подотрезке функция убывает, выбираем отрезок [u1 = {print_number(u1)}, b = {print_number(b)}]')
-        return bisect(f, u1, b, iteration+1, COUNT_ITERATIONS)
-
-def golden_cut(f, a, b, iteration = 1, COUNT_ITERATIONS = 3, x = sp.Symbol('x')):
-    if(iteration > COUNT_ITERATIONS):
-        print(f'Ну здесь остановимся, минимум будет в отрезке {a.evalf()}, {b.evalf()}')
-        return
-    print(f'{iteration})', end = ' ')
-    func = sp.lambdify(x, f)
-    u1 = a + sp.Rational( 382, 1000 ) * (b-a)
-    u2 = a + sp.Rational( 618, 1000 ) * (b-a)
+def golden_cut(f, a, b, COUNT_ITERATIONS = 3, x = sp.Symbol('x')):
+    # if(iteration > COUNT_ITERATIONS):
+    #     print(f'Ну здесь остановимся, минимум будет в отрезке {a.evalf()}, {b.evalf()}')
+    #     return
+    # print(f'{iteration})', end = ' ')
+    # func = sp.lambdify(x, f)
+    # u1 = a + sp.Rational( 382, 1000 ) * (b-a)
+    # u2 = a + sp.Rational( 618, 1000 ) * (b-a)
     
-    func1 = func(u1)
-    func2 = func(u2)
+    # func1 = func(u1)
+    # func2 = func(u2)
 
-    print(f'В точке u1 = {print_number(u1)}: {print_number(func1)}') 
-    print(f'В точке u2 = {print_number(u2)}: {print_number(func2)}') 
+    # print(f'В точке u1 = {print_number(u1)}: {print_number(func1)}') 
+    # print(f'В точке u2 = {print_number(u2)}: {print_number(func2)}') 
 
-    if(iteration == COUNT_ITERATIONS):
-        print(f'Последний шаг, надо вибирать минимум: ', end='')
-        if(func1 < func2):
-            print(f'{print_number(u1)}')
+    # if(iteration == COUNT_ITERATIONS):
+    #     print(f'Последний шаг, надо вибирать минимум: ', end='')
+    #     if(func1 < func2):
+    #         print(f'{print_number(u1)}')
+    #     else:
+    #         print(f'{print_number(u2)}')
+    #     return
+
+    # if(func1 < func2):
+    #     print(f'Так как на этом подотрезке функция возрастает, выбираем отрезок [a = {print_number(a)}, {print_number(u2)}]')
+    #     return golden_cut(f, a, u2, iteration+1, COUNT_ITERATIONS)
+    # else:
+    #     print(f'Так как на этом подотрезке функция убывает, выбираем отрезок [u1 = {print_number(u1)}, b = {print_number(b)}]')
+    #     return golden_cut(f, u1, b, iteration+1, COUNT_ITERATIONS)
+
+    const_1 = sp.Rational( 381966011, 1000000000 )
+    # константа const_1 является приближением числа (3-sqrt(5))/2
+    # = 0.381 966 011
+    const_2 = 1 - const_1
+
+    tmpu = None # TODO доделать сохранение промежуточных точек, сместить за счёт этого 
+    # нумерацию
+    
+    print(f"a_{0} = {print_number(a)}")
+    print(f"b_{0} = {print_number(b)}")
+    for iteration in range(COUNT_ITERATIONS):
+        u_left = a + const_1 * (b - a)
+        u_right = a + const_2 * (b - a)
+        print(f"u_{2*iteration+1} = {print_number(u_left)}")
+        print(f"u_{2*iteration+2} = {print_number(u_right)}")
+
+        f_left = f.subs(x, u_left)
+        f_right = f.subs(x, u_right)
+        print(f"f(u_{2*iteration+1}) = {print_number(f_left)}")
+        print(f"f(u_{2*iteration+2}) = {print_number(f_right)}")
+        if(f_left < f_right):
+            a = a
+            b = u_right
+            baru = u_left
+            m = u_left
         else:
-            print(f'{print_number(u2)}')
-        return
-
-    if(func1 < func2):
-        print(f'Так как на этом подотрезке функция возрастает, выбираем отрезок [a = {print_number(a)}, {print_number(u2)}]')
-        return golden_cut(f, a, u2, iteration+1, COUNT_ITERATIONS)
-    else:
-        print(f'Так как на этом подотрезке функция убывает, выбираем отрезок [u1 = {print_number(u1)}, b = {print_number(b)}]')
-        return golden_cut(f, u1, b, iteration+1, COUNT_ITERATIONS)
+            a = u_left
+            b = b
+            baru = u_right
+            m = f_right
+        print(f"a_{iteration+1} = {print_number(a)}")
+        print(f"b_{iteration+1} = {print_number(b)}")
+    print(f"baru = {print_number(baru)}")
+    print(f"m_* = {print_number(m)}")
+    return (baru, m)
 
 def is_vipuklaya_troika(a, fa, b, fb, c, fc):
     return fa >= fb and fc >= fb and fa + fc >= 2 * fb
 
-def parabola(f, a, b, x = sp.Symbol('x')):
+def parabola(f, a, b, h = 0.2, x = sp.Symbol('x')):
     func = sp.lambdify(x, f)
-    h = 0.2
+    h = sp.Rational(2, 10)
     us = [ (a+b)/ 2. ]
     funcus = [ func(us[0]) ]
 
@@ -233,7 +269,7 @@ if __name__ == "__main__":
     golden_cut(f, a, b)
 
     print('\n\nМетод парабол:')
-    parabola(f, a, b)
+    # parabola(f, a, b)
 
     print('\n\nМетод ломанных')
     method_lomannih(f, a, b, x0=-2)

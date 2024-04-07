@@ -2,6 +2,7 @@ from src.accurate_interpolation import *
 from src.approx_interpolation import *
 from src.extremum import *
 from src.extremum_with_derivative import *
+from src.extremum_with_two_derivatives import *
 
 x = sp.Symbol('x')
 f = x**3 + 3*x**2 + 1
@@ -35,3 +36,6 @@ print(f"{method_srednei_tochki(f, a, b, diff_f=sp.diff(f, x), COUNT_ITERATIONS=2
 
 print("\nМетод секущих")
 print(f"{chordal_method(f, a, b, diff_f = sp.diff(f, x), COUNT_ITERATIONS=2) = }")
+
+print("\nМетод Ньютона")
+print(f"{newton_method(f, a, b, x0=x0, COUNT_ITERATIONS = 2) = }")

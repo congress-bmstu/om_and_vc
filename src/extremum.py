@@ -2,19 +2,13 @@ import numpy as np
 import sympy as sp
 
 try:
+    from .utils import *
     from .accurate_interpolation import *
 except:
     from accurate_interpolation import *
+    from utils import *
 
 # ищется минимум
-
-def print_number(a, ROUNDING_COUNT = 5, x = sp.Symbol('x')):
-    out = ''
-    if(type(a) == int or type(a) == float):
-        out += f'{round(a, ROUNDING_COUNT)}'
-    else:
-        out += f'{a} = {round(a.evalf(), ROUNDING_COUNT)}'
-    return out
 
 def bisect(f, a, b, COUNT_ITERATIONS = 3,
            x = sp.Symbol('x'),

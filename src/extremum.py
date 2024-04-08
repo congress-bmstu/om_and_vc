@@ -220,7 +220,7 @@ def method_lomannih(f, a, b, x0=None, L = None,
                     COUNT_ITERATIONS = 3):
     if L is None:
         f_diff_lambda = sp.lambdify(x, sp.diff(f, x))
-        L = max([ abs(f_diff_lambda(i)) for i in range(int(a), int(b)) ])
+        L = max([ abs(f_diff_lambda(i)) for i in range(int(a), int(b)+1) ])
     print(f'{L = }')
     if x0 is None:
         x0 = sp.Rational(a+b, 2)

@@ -26,7 +26,7 @@ print("\nМетод золотого сечения")
 print(f"{golden_cut(f, a, b, COUNT_ITERATIONS = 2) = }")
 
 print("\nМетод парабол")
-print(f"{parabola(f, a, b, x0=x0) = }")
+print(f"{parabola(f, a, b, x0=x0, h = sp.Rational(2, 10)) = }")
 
 print("\nМетод ломанных")
 print(f"{method_lomannih(f, a, b, x0=x0, COUNT_ITERATIONS = 2) = }")

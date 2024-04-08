@@ -78,20 +78,26 @@ def golden_cut(f, a, b, COUNT_ITERATIONS = 3, x = sp.Symbol('x'),
     for iteration in range(1, COUNT_ITERATIONS):
         u_n = a + b - tmpu[1]
         print(f"u_{iteration+2} = {print_number(u_n)}")
-        # print(f"u_{2*iteration+2} = {print_number(u_right)}")
-
         f_n = f.subs(x, u_n)
-        # f_right = f.subs(x, u_right)
         print(f"f(u_{iteration+2}) = {print_number(f_n)}")
-        # print(f"f(u_{2*iteration+2}) = {print_number(f_right)}")
-        if( (f_n <= tmpu[2] and tmpu[0]) or (f_n >= tmpu[2] and not tmpu[0])):
-            a = a
-            b = u_n
-            tmpu = (not tmpu[0], tmpu[1], tmpu[2])
+        if( tmpu[1] < u_n ):
+            if( tmpu[2] < f_n ):
+                a = a
+                b = u_n
+                tmpu = ( True, tmpu[1], tmpu[2] )
+            else:
+                a = tmpu[1]
+                b = b
+                tmpu = (True, u_n, f_n)
         else:
-            a = tmpu[1]
-            b = b
-            tmpu = (tmpu[0], u_n, f_n)
+            if( tmpu[2] < f_n ):
+                a = u_n
+                b = b
+                tmpu = tmpu
+            else:
+                a = a
+                b = tmpu[1]
+                tmpu = (True, u_n, f_n)
         print(f"a_{iteration+1} = {print_number(a)}")
         print(f"b_{iteration+1} = {print_number(b)}")
         print(f"baru_{iteration+1} = {print_number(tmpu[1])}")
@@ -106,7 +112,7 @@ def is_vipuklaya_troika(u):
 def parabola(f, a, b, h = sp.Rational(1, 5), x0=None, x = sp.Symbol('x')):
     func = sp.lambdify(x, f)
     h = sp.Rational(2, 10)
-    u = [ (x0 if x0 is not None else (a+b)/2, None) ]
+    u = [ (x0 if x0 is not None else sp.Rational(a+b, 2), None) ]
     u[0] = (u[0][0], f.subs(x, u[0][0]))
 
     print(f'u_0 = {print_number(u[0][0])}, f_0 = {print_number(u[0][1])}. ')
@@ -118,15 +124,20 @@ def parabola(f, a, b, h = sp.Rational(1, 5), x0=None, x = sp.Symbol('x')):
     if(u[1][1] > u[0][1]):
         is_step_left = True
         print("Будем двигаться влево")
+        u[0], u[1] = u[1], u[0]
+        print("Переобозначим точки:")
+        print(f'u_0 = {print_number(u[0][0])}, f_0 = {print_number(u[0][1])}.')
+        print(f'u_1 = {print_number(u[1][0])}, f_1 = {print_number(u[1][1])}.')
 
-    while( (is_step_left and u[-1][0] - h*2**(len(u) - 1) < b) or 
-          (not is_step_left and u[-1][0] + h*2**(len(u) - 1) > a) ):
+    while( (is_step_left and u[0][0] - h*2**(len(u) - 1) < b) or 
+          (not is_step_left and u[0][0] + h*2**(len(u) - 1) > a) ):
         if(is_step_left):
-            u.append( (u[-1][0] - h*2**(len(u) - 1),
-                       f.subs(x, (u[-1][0] - h*2**(len(u) - 1))) ) )
+            u.append( (u[0][0] - h*2**(len(u) - 1),
+                       f.subs(x, (u[0][0] - h*2**(len(u) - 1))) ) )
         else:
-            u.append( (u[-1][0] + h*2**(len(u) - 1),
-                       f.subs(x, (u[-1][0] + h*2**(len(u) - 1))) ) )
+            u.append( (u[0][0] + h*2**(len(u) - 1),
+                       f.subs(x, (u[0][0] + h*2**(len(u) - 1))) ) )
+        print(f'u_{len(u)-1} = {print_number(u[-1][0])}, f = {print_number(u[-1][1])}. ')
         if(is_vipuklaya_troika(u[-3:])):
             parabola = naive_interpolation([x[0] for x in u[-3:]], [x[1] for x in u[-3:]], x=x)
             print(f"{parabola}")
@@ -242,7 +253,7 @@ if __name__ == "__main__":
     golden_cut(f, a, b, const_1 = sp.Rational(382, 1000))
 
     print('\n\nМетод парабол:')
-    parabola(f, a, b, x0=-2)
+    parabola(f, a, b)
 
     print('\n\nМетод ломанных')
     method_lomannih(f, a, b, x0=-2)

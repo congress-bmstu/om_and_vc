@@ -1,58 +1,81 @@
 import sympy as sp
 import numpy as np
 
-from extremum_with_two_derivatives import newton_method 
+try:
+    from .extremum_with_two_derivatives import newton_method 
+    from .utils import *
+except:
+    from extremum_with_two_derivatives import newton_method 
+    from utils import *
 
-def grad_method_step_division(f, variables, alpha = sp.Rational(1, 2)):
-    COUNT_ITERATIONS = 5
-    f_lambda = sp.lambdify(variables, f)
-    f_grad = [sp.diff(f, var1) for var1 in variables]
-    f_grad_lambda = [sp.lambdify(variables, f_grad_1) for f_grad_1 in f_grad]
+def grad_method_step_division(f, variables, alpha = sp.Rational(1, 2),
+                              u0 = None, COUNT_ITERATIONS = 5):
+    grad_f = [sp.diff(f, var1) for var1 in variables]
+    
+    if(u0 is None):
+        u0 = [1 for var in variables]
+    f_u = min_f = f.subs({var: u0[j] for (j,var) in enumerate(variables)})
+    baru = u0
 
-    x_k = 1
-    y_k = 2
-    min_f = 1e6
+    u = u0
+    f_k = f.subs({var: u[j] for (j,var) in enumerate(variables)})
+    gradf_k = [ grad_comp.subs({var: u[j] for (j,var) in enumerate(variables)})
+               for grad_comp in grad_f]
+    print(f'u_{0} = {print_point(u)}')
+    print(f'f(u_{0}) = {print_number(f_k)}')
+    print(f'grad_f(u_{0}) = {print_point(gradf_k)}')
 
-    for i in range(COUNT_ITERATIONS):
-        print(f'(x_{i} = {x_k} = {round(x_k, 5)};  y_{i} = {y_k} = {round(y_k, 5)})')
-        f_k = f_lambda(x_k, y_k)
-        print(f'  f(x_{i}, y_{i}) = {f_k} = {round(f_k, 5)}')
+    for i in range(1, COUNT_ITERATIONS+1):
+        u = [u[j] - alpha * gradf_k[j] for j in range(len(variables))]
+        f_k = f.subs({var: u[j] for (j,var) in enumerate(variables)})
+        gradf_k = [ grad_comp.subs({var: u[j] for (j,var) in enumerate(variables)})
+                   for grad_comp in grad_f]
+        print(f'u_{i} = {print_point(u)}')
+        print(f'f(u_{i}) = {print_number(f_k)}')
+        print(f'grad_f(u_{i}) = {print_point(gradf_k)}')
 
         if(f_k < min_f):
             min_f = f_k
+            baru = u
         else:
             alpha = sp.Rational(alpha, 2)
+    return (baru, min_f)
 
-        x_k = x_k - alpha * f_grad_lambda[0](x_k, y_k)
-        y_k = y_k - alpha * f_grad_lambda[1](x_k, y_k)
+def grad_method_of_fastest_fall(f, variables, alpha = sp.Rational(1, 2),
+                                u0 = None, COUNT_ITERATIONS = 5):
+    grad_f = [sp.diff(f, var1) for var1 in variables]
+    
+    if(u0 is None):
+        u0 = [1 for var in variables]
+    f_u = min_f = f.subs({var: u0[i] for (i,var) in enumerate(variables)})
+    baru = u0
 
-def grad_method_of_fastest_fall(f, variables):
-    COUNT_ITERATIONS = 5
-    f_lambda = sp.lambdify(variables, f)
-    f_grad = [sp.diff(f, var1) for var1 in variables]
-    f_grad_lambda = [sp.lambdify(variables, f_grad_1) for f_grad_1 in f_grad]
+    u = u0
+    f_k = f.subs({var: u[j] for (j,var) in enumerate(variables)})
+    gradf_k = [ grad_comp.subs({var: u[j] for (j,var) in enumerate(variables)})
+               for grad_comp in grad_f]
+    print(f'u_{0} = {print_point(u)}')
+    print(f'f(u_{0}) = {print_number(f_k)}')
+    print(f'grad_f(u_{0}) = {print_point(gradf_k)}')
 
-    x_k = 1
-    y_k = 2
-
-    for i in range(COUNT_ITERATIONS):
-        print(f'{i}) (x_{i} = {x_k} = {round(x_k, 5)};  y_{i} = {y_k} = {round(y_k, 5)})')
-        f_k = f_lambda(x_k, y_k)
-        print(f'  f(x_{i}, y_{i}) = {f_k} = {round(f_k, 5)}')
-
-        phi = f_lambda(x_k - sp.Symbol('alpha') * f_grad_lambda[0](x_k, y_k),
-                       y_k - sp.Symbol('alpha') * f_grad_lambda[1](x_k, y_k))
-        alpha = newton_method(phi, sp.Symbol('alpha'), -100, 100)
-        print(f'Найденный минимум находится в точке alpha = {alpha}')
-
-        x_k = x_k - alpha * f_grad_lambda[0](x_k, y_k)
-        y_k = y_k - alpha * f_grad_lambda[1](x_k, y_k)
+    for i in range(1, COUNT_ITERATIONS):
+        phi = f.subs({var: u[j] - sp.Symbol('alpha') * gradf_k[j]
+                      for (j,var) in enumerate(variables)})
+        alpha = newton_method(phi, sp.Symbol('alpha'), -100, 100)[0]
+        u = [u[j] - alpha * gradf_k[j] for j in range(len(variables))]
+        f_k = f.subs({var: u[j] for (j,var) in enumerate(variables)})
+        gradf_k = [ grad_comp.subs({var: u[j] for (j,var) in enumerate(variables)})
+                   for grad_comp in grad_f]
+        print(f'u_{i} = {print_point(u)}')
+        print(f'f(u_{i}) = {print_number(f_k)}')
+        print(f'grad_f(u_{i}) = {print_point(gradf_k)}')
+    return (u, f_k)
 
 if __name__ == '__main__': 
     x, y = sp.symbols('x, y')
     f = x**2 + 2 * y**2
     print('\nГрадиентный метод деления шага:')
-    grad_method_step_division(f, [x, y])
+    print(f"{grad_method_step_division(f, [x, y], u0=[1, 2]) = }")
 
     print('\nГрадиентный метод наискорейшего спуска:')
     grad_method_of_fastest_fall(f, [x, y])

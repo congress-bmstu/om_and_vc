@@ -7,3 +7,6 @@ def print_number(a, ROUNDING_COUNT = 5, x = sp.Symbol('x')):
     else:
         out += f'{a} = {round(a.evalf(), ROUNDING_COUNT)}'
     return out
+
+def print_point(u, ROUNDING_COUNT = 5):
+    return '(' + ', '.join([print_number(x) for x in u]) + ')'

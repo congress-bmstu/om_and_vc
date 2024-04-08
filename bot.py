@@ -28,23 +28,23 @@ class Form(StatesGroup):
 
 @router.message(Command('start'))
 async def sendhelp(message: types.Message):
-    await message.answer('send /solve')
+    await message.answer('Пиши /solve чтобы начать решать')
 
 @router.message(Command('solve'))
 async def solve(message: types.Message, state: FSMContext):
-    await message.answer(f'select task\n{toc}')
+    await message.answer(f'Выбери задачу\n{toc}')
     await state.set_state(Form.began.state)
 
 @router.message(Form.began)
 async def select_task(message: types.Message, state: FSMContext):
-    selected_task = get_task(message.text.strip())
+    selected_task = get_task(message.text.strip().replace(',','.'))
     input_format = get_format_message(selected_task)
     
     user_data = await state.get_data()
     user_data['selected_task'] = selected_task
     await state.set_data(user_data)
     
-    await message.answer(f'you have seleted task {message.text.strip()}.\ngive input in following format')
+    await message.answer(f'Ты выбрал(а) задачу {message.text.strip()}.\nОтправь входные данные в следующем формате:')
     await message.answer(input_format)
     await state.set_state(Form.select_task.state)
 
@@ -56,12 +56,12 @@ async def get_input(message: types.Message, state: FSMContext):
     user_data['task_input'] = task_input
     await state.set_data(user_data)
     
-    await message.answer(f'you have provided the following input:\n{task_input}.\ncheck that everything is correct. procceed?', reply_markup=make_row_keyboard(['Yes', 'No']))
+    await message.answer(f'Бот получил такие входные данные:\n{task_input}\nПроверь правильность ввода. Продолжить?', reply_markup=make_row_keyboard(['Да', 'Нет']))
     await state.set_state(Form.confirm_and_process.state)
 
 @router.message(Form.confirm_and_process)
 async def confirm_and_process(message: types.Message, state: FSMContext):
-    proceed = message.text == 'Yes'
+    proceed = message.text == 'Да'
     if proceed:
         user_data = await state.get_data()
         selected_task = user_data['selected_task']
@@ -70,17 +70,15 @@ async def confirm_and_process(message: types.Message, state: FSMContext):
         template = selected_task['input_format']
         function = selected_task['function']
         
-        result = process_by_template(task_input, template, function)
-        await message.answer('confirm_and_process'+str(result), reply_markup=None)
-        await state.clear()
+        try:
+            output, retval = process_by_template(task_input, template, function)
+        except Exception as e:
+            await message.answer(f'Ошибка выполнения\n{e}', reply_markup=None)
+        else:
+            await message.answer(f'**Вывод функции:**\n{output}\n**Возвращенное значение:**\n{retval}', reply_markup=None)
+            await state.clear()
     else:
-        await message.answer('rejected', reply_markup=None)
-
-@router.message(Command('drawmap'))
-async def draw_map(message: types.Message, state: FSMContext):
-    await state.set_state(Form.began.state)
-    await message.reply("Выберите пресет", reply_markup=make_row_keyboard(themes))
-
+        await message.answer('Отклонено', reply_markup=None)
 
 @router.message(Command('stop'))
 async def stop(message: types.Message, state: FSMContext):
@@ -89,7 +87,7 @@ async def stop(message: types.Message, state: FSMContext):
 
 @router.message()
 async def unknown(message: types.Message):
-    await message.answer('/solve')
+    await message.answer('Не понял тебя, напиши /solve')
 
 async def main():
     dp.include_router(router)

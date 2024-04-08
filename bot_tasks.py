@@ -14,19 +14,34 @@ FUNCTION = 'x**3 + 6 * x**2 + 9 * x + 1 // функция одной перем�
 
 def parse_number(user_input):
     try:
-        parsed_number = float(user_input)
-        if parsed_number.is_integer():
-            parsed_number = int(parsed_number)
-        return parsed_number
+        return sp.nsimplify(user_input)
+        # parsed_number = float(user_input)
+        # if parsed_number.is_integer():
+        #     parsed_number = int(parsed_number)
+        # return parsed_number
     except ValueError:
-        raise ValueError("Invalid input. Please enter a valid number.")
+        raise ValueError(f"Некорректный ввод ({user_input}). Пожалуйста, введи число.")
 
 def parse_number_list(inp):
-    return list(map(parse_number, inp.split()))
+    try:
+        return list(map(parse_number, inp.split()))
+    except:
+        raise ValueError(f"Не смог распарсить список чисел:\n{inp}")
+    
+def parse_function(inp):
+    try:
+        sym_expr = sp.parse_expr(inp, evaluate=False)
+        return parsed_function
+    except:
+        raise ValueError(f"Не смог распарсить функция:\n{inp}")
 
 def process_by_template(inp, template, function):
     inputs = inp.split('\n')
-    get_input = lambda: inputs.pop(0)
+    def get_input():
+        try:
+            return inputs.pop(0)
+        except:
+            raise TypeError('Ты не ввел все входные данные, давай-ка заново.')
     args = []
     for token in template:
         if token == NUMBER_LIST:
@@ -34,10 +49,7 @@ def process_by_template(inp, template, function):
         if token == SINGLE_NUMBER:
             args.append(parse_number(get_input()))
         if token == FUNCTION:
-            sym_expr = sp.parse_expr(get_input(), evaluate=False)
-            x = sp.symbols('x')
-            parsed_function = sym_expr.subs('x', x)
-            args.append(parsed_function)
+            args.append(parse_function(get_input()))
     
     sys.stdout = my = StringIO()
     retval = function(*args)
@@ -50,7 +62,7 @@ tasks={
     'Точная интерполяция': {
         'Интерполяция в лоб':{
             'function': naive_interpolation,
-            'input_format': [NUMBER_LIST, NUMBER_LIST]
+            'input_format': [NUMBER_LIST, NUMBER_LIST],
         },
         'Интерполяция Лагранжа':{
             'function': lagrange_interpolation,
@@ -141,6 +153,12 @@ def get_task(index):
     if not (subkey and key):
         raise KeyError('Такой задачи нет')
     return tasks[key][subkey]
+
+def get_task_name(index):
+    for line in toc.split('\n'):
+        if line.strip().startswith(index.strip()):
+            return line.strip()
+    return index
 
 def get_format_message(task):
     return '\n'.join(task['input_format'])

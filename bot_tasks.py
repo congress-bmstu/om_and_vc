@@ -5,6 +5,8 @@ from src.extremum_with_two_derivatives import *
 from src.extremum import *
 # from src.multidim_optimization_with_grad import *
 import sympy as sp
+from io import StringIO
+import sys
 
 NUMBER_LIST = '1 2.2 3 -4 -5.1 //числа через пробел'
 SINGLE_NUMBER = '2 //одно число'
@@ -32,11 +34,16 @@ def process_by_template(inp, template, function):
         if token == SINGLE_NUMBER:
             args.append(parse_number(get_input()))
         if token == FUNCTION:
-            parsed_function = sp.parse_expr(get_input(), evaluate=False)
+            sym_expr = sp.parse_expr(get_input(), evaluate=False)
             x = sp.symbols('x')
             parsed_function = sym_expr.subs('x', x)
             args.append(parsed_function)
-    return function(*args)
+    
+    sys.stdout = my = StringIO()
+    retval = function(*args)
+    sys.stdout = sys.__stdout__
+    
+    return my.getvalue(), retval
 
 
 tasks={
@@ -77,7 +84,35 @@ tasks={
             'function': method_lomannih,
             'input_format': [FUNCTION, SINGLE_NUMBER, SINGLE_NUMBER, SINGLE_NUMBER]
         }
-    }
+    },
+    'Одномерная оптимизация с использованием производных': {
+        'Метод средней точки':{
+          'function': method_srednei_tochki,
+          'input_format': [FUNCTION, SINGLE_NUMBER, SINGLE_NUMBER]
+        },
+        'Метод хорд (метод секущих)':{
+          'function': chordal_method,
+          'input_format': [FUNCTION, SINGLE_NUMBER, SINGLE_NUMBER]
+        },
+        'Метод Ньютона (метод касательных)':{
+          'function': newton_method,
+          'input_format': [FUNCTION, SINGLE_NUMBER, SINGLE_NUMBER]
+        },
+    },
+    # 'Многомерная оптимизация': {
+    #     'Градиентный метод дробления шага':{
+    #       'function': grad_method_step_division,
+    #       'input_format': [FUNCTION]
+    #     },
+    #     'Градиентный метод скорейшего спуска':{
+    #         'function': grad_method_of_fastest_fall,
+    #         'input_format': [FUNCTION],
+    #     },
+    #     'Метод сопряженных направлений':{
+    #         'function': lambda: 'Пока еще не реализовали',
+    #         'input_format': [],
+    #     }
+    # }
 }
 
 def get_table_of_contents():

@@ -58,10 +58,15 @@ def grad_method_of_fastest_fall(f, variables, alpha = sp.Rational(1, 2),
     print(f'f(u_{0}) = {print_number(f_k)}')
     print(f'grad_f(u_{0}) = {print_point(gradf_k)}')
 
-    for i in range(1, COUNT_ITERATIONS):
+    for i in range(1, COUNT_ITERATIONS+1):
         phi = f.subs({var: u[j] - sp.Symbol('alpha') * gradf_k[j]
                       for (j,var) in enumerate(variables)})
-        alpha = newton_method(phi, sp.Symbol('alpha'), -100, 100)[0]
+        print(f"phi_{i-1} = {phi}")
+        print("Найдём минимум этой функции методом Ньютона:")
+        alpha = newton_method(phi, -100, 100, x = sp.Symbol('alpha'), COUNT_ITERATIONS = 3)
+        print("\n")
+        print(f"alpha_{i-1} = {print_number(alpha)}", "\n")
+
         u = [u[j] - alpha * gradf_k[j] for j in range(len(variables))]
         f_k = f.subs({var: u[j] for (j,var) in enumerate(variables)})
         gradf_k = [ grad_comp.subs({var: u[j] for (j,var) in enumerate(variables)})

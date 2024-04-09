@@ -162,6 +162,8 @@ def find_piecewise_min(piecewise, a, b, x = sp.Symbol('x')):
 def max_piecewise(piecewise_1, piecewise_2, point, x = sp.Symbol('x')):
     expr_set = list(piecewise_1.as_expr_set_pairs())
     expr_set_2 = list(piecewise_2.as_expr_set_pairs())
+    expr_set = sorted(expr_set, key = lambda y : y[1].inf)
+    expr_set_2 = sorted(expr_set_2, key = lambda y : y[1].inf)
     # предполагается, что piecewise_2 состоит из двух интервалов с границей point
     interval_index = None
     is_going_down = None
@@ -229,13 +231,20 @@ def method_lomannih(f, a, b, x0=None, L = None,
                      (f.subs(x, u) - L * (x-u), (x >= u) & (x <= b) ))
     xi = [x0]
     ps = [g.subs(u, x0)]
+    print(f"x_{0} = {print_number(xi[-1])}")
+    print("p_{0}")
+    sp.pprint(ps[-1])
+
     for i in range(COUNT_ITERATIONS):
-        print(f"{i+1}) x_{i} = {xi[i]}")
+        xi.append( find_piecewise_min(ps[-1], a, b, x=x) )
+        print(f"{i+1}) x_{i} = {print_number(xi[-1])}")
+
+        ps.append( max_piecewise(ps[-1], g.subs(u, xi[-1]), xi[-1], x=x) )
+
         print(f"p_{i}")
         sp.pprint(ps[-1])
+    xi.append( find_piecewise_min(ps[-1], a, b, x=x) )
 
-        xi.append( find_piecewise_min(ps[-1], a, b, x=x) )
-        ps.append( max_piecewise(ps[-1], g.subs(u, xi[-1]), xi[-1], x=x) )
     return (xi[-1], f.subs(x, xi[-1]))
 
     

@@ -1,8 +1,11 @@
 import sympy as sp
+import numpy as np
 from src.multidim_optimization_with_grad import *
 
 x, y = sp.symbols('x y')
-g = x**2 + 2 * y**2 + 3*x
+g = x**2 + 2 * y**2 + 3*y
+
+
 
 print(f"{g = }")
 print("\nГрадиентный метод дробления шага")

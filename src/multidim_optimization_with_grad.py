@@ -90,31 +90,35 @@ def method_of_conjugate_directions(f, variables,
     u = u0
     f_k = f.subs({var: u[j] for (j, var) in enumerate(variables)})
     Asp = hessian(f, variables)
-    xy = (x, y)
+    xy = variables
     A = sp.lambdify(xy, Asp, modules='numpy')
     A = A(0, 0)
-    grad_f = [sp.diff(f, var1) for var1 in [x, y]]
+    grad_f = [sp.diff(f, var1) for var1 in variables]
     print("A: ", A)
-    b = [-grad_f[0].subs(y, 0).subs(x, 0), -grad_f[1].subs(x, 0).subs(y, 0)]
+    b = [-grad_f[0].subs(variables[0], 0).subs(variables[1], 0), -grad_f[1].subs(variables[0], 0).subs(variables[1], 0)]
     print("b: ", b)
     p = []
+    print(f"u_0 = {u}")
     for i in range(1, COUNT_ITERATIONS + 1):
-        Q = A @ u - b
-        p.append(Q)
         if i == 1:
+            Q = A @ u - b
+            print(f"Q'(u_0) = {Q}")
+            p.append(Q)
             alpha = (Q @ p[i - 1]) / ((A @ p[i - 1]) @ p[i - 1])
             u = u - alpha * p[i - 1]
-            print(f"p_{i - 1} = {p}")
+            print(f"p_{i - 1} = {p[i - 1]}")
             print(f"alpha_{i - 1} = {alpha}")
             print(f"u_{i} = {u}")
         else:
             Q = A @ u - b
+            print(f"Q'(u_{i - 1}) = ", Q)
             beta = ((A @ p[i - 2]) @ Q) / ((A @ p[i - 2]) @ p[i - 2])
+            p.append(Q - beta * p[i - 2])
             alpha = (Q @ p[i - 1]) / ((A @ p[i - 1]) @ p[i - 1])
             u = u - alpha * p[i - 1]
             print(f"alpha_{i - 1} = {alpha}")
-            print(f"beta_{i - 1} = {alpha}")
-            print(f"p_{i - 1} = {p}")
+            print(f"beta_{i - 2} = {beta}")
+            print(f"p_{i - 1} = {p[i - 1]}")
             print(f"u_{i} = {u}")
         baru = u
         f_k = f.subs({var: u[j] for (j,var) in enumerate(variables)})

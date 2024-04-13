@@ -25,3 +25,21 @@ def parse_function(inp):
         return sym_expr
     except Exception as e:
         raise ValueError(f"Не смог распарсить функцию:\n{inp}\n{e}")
+
+def parse_variable(inp):
+    try:
+        sym_expr = sp.parse_expr(inp, evaluate=False)
+        assert type(sym_expr) is sp.Symbol
+        return sym_expr
+    except Exception as e:
+        raise ValueError(f"Не смог распарсить переменную:\n{inp}\n{e}")
+
+def parse_variable_list(inp):
+    try:
+        sym_expr = sp.parse_expr(inp, evaluate=False)
+        assert type(sym_expr) in [tuple, sp.Symbol]
+        if type(sym_expr) is tuple:
+            return list(sym_expr)
+        return [sym_expr]
+    except Exception as e:
+        raise ValueError(f"Не смог распарсить список переменных:\n{inp}\n{e}")

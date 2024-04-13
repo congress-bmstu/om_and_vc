@@ -1,7 +1,7 @@
 from typing import Callable, Any
 from dataclasses import dataclass
 
-from .parser_functions import parse_number, parse_number_list, parse_function
+from bot.parser_functions import parse_number, parse_number_list, parse_function, parse_variable, parse_variable_list
 
 
 @dataclass
@@ -38,5 +38,12 @@ class ArgumentInput(InputType):
 
 
 NUMBER_LIST = InputType('1 2.2 3 -4 -5.1', 'числа через пробел', parse_number_list)
+
+# то же самое что NUMBER_LIST, но с другим форматом ввода и комментарием,
+# чтобы не путать никого пятимерными точками как в формате NUMBER_LIST
+POINT_2D = InputType('1.3 -5.4', '2ух мерные координаты', parse_number_list)
+
 SINGLE_NUMBER = InputType('2', 'одно число', parse_number)
 FUNCTION = InputType('x**3 + 6 * x**2 + 9 * x + 1', ' функция одной переменной x', parse_function)
+VARIABLE = InputType('x', 'переменная', parse_variable)
+VARIABLE_LIST = InputType('x,y,...', 'список переменных', parse_variable_list)

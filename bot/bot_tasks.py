@@ -8,8 +8,8 @@ from bot.task_list import tasks
 def process_by_template(user_input: str, template: list[ArgumentInput | InputType], function):
     try:
         args = [token(line) for line, token in zip(user_input.split('\n'), template)]
-    except:
-        raise ValueError('Не смог распознать что ты ввёл')
+    except Exception as e:
+        raise ValueError(f'Не смог распознать что ты ввёл, подробнее:\n{e}')
 
     sys.stdout = my = StringIO()
     retval = function(*args)

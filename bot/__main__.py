@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.filters import Command
+from aiogram.utils.formatting import Bold, Text
 
 from bot.keyboard import make_row_keyboard
 from bot.bot_tasks import toc, get_task, get_format_message, process_by_template, get_task_name
@@ -73,6 +74,14 @@ async def solve(message: types.Message, state: FSMContext):
     await state.set_state(Form.began.state)
 
 
+def make_bold_examples(text):
+    res = []
+    for line in text.split('\n'):
+        l, r = line.split('//')
+        res += [Bold(l), f' //{r}\n']
+    return res
+
+
 @router.message(Form.began)
 async def select_task(message: types.Message, state: FSMContext):
     try:
@@ -91,9 +100,15 @@ async def select_task(message: types.Message, state: FSMContext):
         await state.set_data(user_data)
 
         await delete_all_messages(state)
-        m1 = await message.answer(
-            f'Ты выбрал(а) задачу {get_task_name(task_index)}.\nОтправь входные данные в следующем формате:')
-        m2 = await message.answer(input_format)
+        m1 = await message.answer(**Text(
+            f'Ты выбрал(а) задачу {get_task_name(task_index)}.\nОтправь входные данные в следующем формате \n(только',
+            Bold(' жирный '),
+            'текст):').as_kwargs()
+                                  )
+        m2 = await message.answer(**Text(Bold('пример'),
+                                         ' //описание формата; смысл в задаче\n',
+                                         *make_bold_examples(input_format)).as_kwargs()
+                                  )
         await save_message(m1, state)
         await save_message(m2, state)
         await state.set_state(Form.select_task.state)

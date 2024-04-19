@@ -29,7 +29,7 @@ def bisect(f, a, b, COUNT_ITERATIONS = 3,
             a = a
             b = u_right
             baru = u_left
-            m = u_left
+            m = f_left
         else:
             a = u_left
             b = b

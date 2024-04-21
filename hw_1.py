@@ -5,10 +5,11 @@ from src.extremum_with_derivative import *
 from src.extremum_with_two_derivatives import *
 
 x = sp.Symbol('x')
-f = x ** 3 - 3 * x + 1
-a = 0
-b = 3
-x0 = 2
+# variant 10
+f = x ** 3 + 3 * x**2 - 9 * x + 3
+a = -1
+b = 2
+x0 = 0
 
 print("1.a)")
 X = np.arange(a, b+1)
@@ -30,7 +31,7 @@ print(f"{parabola(f, a, b, h = sp.Rational(2, 10)) = }")
 
 # три итерации это две итерации
 print("\nМетод ломанных")
-print(f"{method_lomannih(f, a, b, x0=x0, COUNT_ITERATIONS = 2) = }")
+print(f"{method_lomannih(f, a, b, x0=x0, COUNT_ITERATIONS = 2, plot_filename='method_lomannih.png') = }")
 
 # две итерации это три итерации
 print("\nМетод средней точки")

@@ -34,7 +34,7 @@ def method_srednei_tochki(f, a, b, diff_f = None,
         else:
             a = c
             b = b
-    return c
+    return (c, f.subs(x, c))
         
 def chordal_method(f, a, b, diff_f = None,
                    COUNT_ITERATIONS = 3, x = sp.Symbol('x')):
@@ -62,7 +62,7 @@ def chordal_method(f, a, b, diff_f = None,
         else:
             a = c
             b = b
-    return c
+    return (c, f.subs(x, c))
 
 if __name__ == "__main__":
     f = x**3 + 6 * x**2 + 9 * x + 1

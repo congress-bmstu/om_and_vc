@@ -24,13 +24,13 @@ def newton_method(f, a, b, diff_f = None, ddiff_f = None, x0 = None,
         print(f'x_{i} = {print_number(x_k)}')
         print(f"diff_f(x_{i}) = {print_number(diff_x_k)}")
         if(diff_x_k == 0):
-            return x_k
+            return (x_k, f.subs(x, x_k))
         print(f"ddiff_f(x_{i}) = {print_number(ddiff_x_k)}")
         x_k = x_k - sp.Rational(diff_x_k, ddiff_x_k)
     if(len(str(x_k.denominator)) > 7):
-        return x_k.evalf()
+        return (x_k.evalf(), f.subs(x, x_k).evalf())
     else:
-        return x_k
+        return (x_k, f.subs(x, x_k))
 
 if __name__ == '__main__':
     x = sp.Symbol('x')

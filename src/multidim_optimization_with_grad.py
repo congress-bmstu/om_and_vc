@@ -1,6 +1,4 @@
-import pylab as p
 import sympy as sp
-import numpy as np
 from sympy.matrices import Matrix, hessian
 
 try:
@@ -28,6 +26,7 @@ def grad_method_step_division(f, variables, alpha = sp.Rational(1, 2),
     print(f'grad_f(u_{0}) = {print_point(gradf_k)}')
 
     for i in range(1, COUNT_ITERATIONS+1):
+        print(f"alpha_{i-1} = {print_number(alpha)}")
         u = [u[j] - alpha * gradf_k[j] for j in range(len(variables))]
         f_k = f.subs({var: u[j] for (j,var) in enumerate(variables)})
         gradf_k = [ grad_comp.subs({var: u[j] for (j,var) in enumerate(variables)})
@@ -65,7 +64,7 @@ def grad_method_of_fastest_fall(f, variables, alpha = sp.Rational(1, 2),
                       for (j,var) in enumerate(variables)})
         print(f"phi_{i-1} = {phi}")
         print("Найдём минимум этой функции методом Ньютона:")
-        alpha = newton_method(phi, -100, 100, x = sp.Symbol('alpha'), COUNT_ITERATIONS = 3)
+        alpha, _ = newton_method(phi, -100, 100, x = sp.Symbol('alpha'), COUNT_ITERATIONS = 3)
         print("\n")
         print(f"alpha_{i-1} = {print_number(alpha)}", "\n")
 
@@ -127,11 +126,11 @@ def method_of_conjugate_directions(f, variables,
 if __name__ == '__main__': 
     x, y = sp.symbols('x, y')
     f = x**2 + 2 * y**2 + 2 * x * y - 2 * x - 4 * y
-    # print('\nГрадиентный метод деления шага:')
-    # print(f"{grad_method_step_division(f, [x, y], u0=[1, 2]) = }")
-    #
-    # print('\nГрадиентный метод наискорейшего спуска:')
-    # grad_method_of_fastest_fall(f, [x, y])
+    print('\nГрадиентный метод деления шага:')
+    print(f"{grad_method_step_division(f, [x, y], u0=[1, 2]) = }")
+
+    print('\nГрадиентный метод наискорейшего спуска:')
+    grad_method_of_fastest_fall(f, [x, y])
 
     print('\nМетод сопряженных направлений:')
     print(f"{method_of_conjugate_directions(f, [x, y], u0=[1, 2], COUNT_ITERATIONS=2) = }")

@@ -237,12 +237,6 @@ def method_lomannih(f, a, b, x0=None, L = None,
     print("p_{0}")
     sp.pprint(ps[-1])
 
-    styles = ['--',':','-']
-    if plot_filename is not None:
-        x_plot = np.linspace(a,b,100)
-        y_plot = sp.lambdify(x,ps[-1], 'numpy')(x_plot)
-        plt.plot(x_plot,y_plot, linestyle=styles[0], lw=2, label='$ p_0 $')
-        
     for i in range(COUNT_ITERATIONS):
         xi.append( find_piecewise_min(ps[-1], a, b, x=x) )
         print(f"{i+1}) x_{i} = {print_number(xi[-1])}")
@@ -251,21 +245,34 @@ def method_lomannih(f, a, b, x0=None, L = None,
 
         print(f"p_{i}")
         sp.pprint(ps[-1])
-        
-        if plot_filename is not None:
-            y_plot = sp.lambdify(x,ps[-1], 'numpy')(x_plot)
-            plt.plot(x_plot,y_plot, linestyle=styles[i+1], lw=(i+1)*5, alpha=1/(i+1),label=f'$ p_{i+1} $')
+            
     xi.append( find_piecewise_min(ps[-1], a, b, x=x) )
 
+
     if plot_filename is not None:
-        plt.xlabel('$ x $', loc='right')
-        plt.ylabel('$ f $', loc='top', rotation=0)
-        plt.plot(x_plot, sp.lambdify(x,f,'numpy')(x_plot), label=f'$ f(x)={sp.latex(f)} $')
-        plt.scatter(xi[-1], f.subs(x, xi[-1]),c='r', label=f'$ min^*  $')
-        plt.legend()
-        plt.tight_layout()
+        fig, ax = plt.subplots()
+        styles = ['--',':','-']
+        x_plot = np.linspace(a,b,100)
+
+        for iteration, p in enumerate(ps):
+            y_plot = sp.lambdify(x,p, 'numpy')(x_plot)
+            ax.plot(x_plot,y_plot,
+                     linestyle=styles[iteration],
+                     lw=(iteration+1)*2,
+                     alpha=1./(iteration + 1),
+                     label=f'$ p_{iteration} $')
+
+        ax.plot(x_plot, sp.lambdify(x,f,'numpy')(x_plot), label=f'$ f(x)={sp.latex(f)} $')
+        ax.scatter(xi[-1], f.subs(x, xi[-1]),c='r', label=f'$ min^*  $')
+
+        ax.set_xlabel('$ x $', loc='right')
+        ax.set_ylabel('$ f $', loc='top', rotation=0)
+
+        ax.grid()
+        fig.legend()
+        fig.tight_layout()
         # plt.show()
-        plt.savefig(plot_filename, dpi=300)
+        fig.savefig(plot_filename, dpi=300)
     return (xi[-1], f.subs(x, xi[-1]))
 
     
